@@ -68,7 +68,6 @@ public class EncodersTest extends LinearOpMode {
             RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             telemetry.addLine("RUN USING ENCODERS");
-            telemetry.update();
 
             int LFStartingPosition = LF.getCurrentPosition();
             int LBStartingPosition = LB.getCurrentPosition();
@@ -76,12 +75,6 @@ public class EncodersTest extends LinearOpMode {
             int RBStartingPosition = RB.getCurrentPosition();
 
             telemetry.addLine("Found current position");
-            telemetry.update();
-
-            LF.setPower(driveSpeed);
-            LB.setPower(driveSpeed);
-            RF.setPower(driveSpeed);
-            RB.setPower(driveSpeed);
 
             LF.setTargetPosition((int)(12 * ticksPerInch) + LFStartingPosition);
             LB.setTargetPosition((int)(12 * ticksPerInch) + LBStartingPosition);
@@ -89,7 +82,13 @@ public class EncodersTest extends LinearOpMode {
             RB.setTargetPosition((int)(12 * ticksPerInch) + RBStartingPosition);
 
             telemetry.addLine("Set Target Position");
-            telemetry.update();
+
+            while (LF.getCurrentPosition() < ((12 * ticksPerInch) + LFStartingPosition)) {
+                LF.setPower(driveSpeed);
+                LB.setPower(driveSpeed);
+                RF.setPower(driveSpeed);
+                RB.setPower(driveSpeed);
+            }
 
             LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
