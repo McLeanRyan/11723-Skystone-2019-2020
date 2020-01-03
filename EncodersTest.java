@@ -83,12 +83,25 @@ public class EncodersTest extends LinearOpMode {
 
             telemetry.addLine("Set Target Position");
 
-            while (LF.getCurrentPosition() < ((12 * ticksPerInch) + LFStartingPosition)) {
-                LF.setPower(driveSpeed);
-                LB.setPower(driveSpeed);
-                RF.setPower(driveSpeed);
-                RB.setPower(driveSpeed);
+            LF.setPower(Math.abs(driveSpeed));
+            LB.setPower(Math.abs(driveSpeed));
+            RF.setPower(Math.abs(driveSpeed));
+            RB.setPower(Math.abs(driveSpeed));
+
+            while (LF.isBusy() || LB.isBusy() || RF.isBusy() || RB.isBusy()) {
+                telemetry.addData("LF Encoder Pos: ", LF.getCurrentPosition());
+                telemetry.addData("LB Encoder Pos: ", LB.getCurrentPosition());
+                telemetry.addData("RF Encoder Pos: ", RF.getCurrentPosition());
+                telemetry.addData("RB Encoder Pos: ", RB.getCurrentPosition());
+                telemetry.update();
             }
+
+            telemetry.addLine("Finished Driving");
+
+            LF.setPower(0);
+            LB.setPower(0);
+            RF.setPower(0);
+            RB.setPower(0);
 
             LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
