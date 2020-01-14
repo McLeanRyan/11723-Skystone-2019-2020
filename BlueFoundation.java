@@ -6,10 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -18,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 
 @Autonomous
-public class RedFoundation extends LinearOpMode {
+public class BlueFoundation extends LinearOpMode {
 
     DcMotor LF, RF, LB, RB, FI, LIFT;
     CRServo ARM2, BOOM;
@@ -26,13 +24,9 @@ public class RedFoundation extends LinearOpMode {
     BNO055IMU imu;
     private Orientation angles;
 
-    double kP = 0.005;
-
-    private ElapsedTime runtime = new ElapsedTime();
-
     double ticksPerMotorRev = 383.6;
-    double driveGearReduction = 0.5;
-    double wheelDiameterInches = 3.93701;
+    double driveGearReduction = 2;
+    double wheelDiameterInches = 4;
     double ticksPerInch = (ticksPerMotorRev * driveGearReduction) / (wheelDiameterInches * 3.14159265359);
 
     //about 30" to foundation
@@ -84,25 +78,24 @@ public class RedFoundation extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-           // encoderDrive(.15,-21,60, false);
+            encoderDrive(.15,-21,false);
 
-            //ARM2.setPower(1);
+            ARM2.setPower(1);
             //sleep();
 
-            //encoderDrive(.15,20, 60, false);
+            encoderDrive(.15,20, false);
 
-            /*ARM2.setPower(-1);
+            ARM2.setPower(-1);
             sleep(800);
-            ARM2.setPower(0);*/
+            ARM2.setPower(0);
 
-            gyroDrive(90);
+            turn(-0.1, 90);
 
-            //encoderDrive(.15,30,60, false);
-            stop();
+            encoderDrive(.15,30,false);
         }
     }
 
-    private void encoderDrive(double speed, double inches, double timeoutS, boolean strafe) {
+    private void encoderDrive(double speed, double inches, boolean strafe) {
 
         telemetry.addLine("Encoder Drive");
 
@@ -151,19 +144,16 @@ public class RedFoundation extends LinearOpMode {
             LB.setPower(Math.abs(speed));
             RB.setPower(Math.abs(speed));
 
-            runtime.reset();
+            while (opModeIsActive() && (LF.isBusy() && RF.isBusy() && LB.isBusy() && RB.isBusy())) {
 
-            while (opModeIsActive() && runtime.seconds() < timeoutS && (LF.isBusy() && RF.isBusy() && LB.isBusy() && RB.isBusy())) {
-
-
-                telemetry.addData("LF Current Position", LF.getCurrentPosition());
-                telemetry.addData("RF Current Position", RF.getCurrentPosition());
-                telemetry.addData("LB Current Position", LB.getCurrentPosition());
-                telemetry.addData("RB Current Position", RB.getCurrentPosition());
-                telemetry.addData("LF Current Power", LF.getPower());
-                telemetry.addData("RF Current Power", RF.getPower());
-                telemetry.addData("LB Current Power", LB.getPower());
-                telemetry.addData("RB Current Power", RB.getPower());
+                telemetry.addData("LFM Current Pos", LF.getCurrentPosition());
+                telemetry.addData("RFM Current Pos", RF.getCurrentPosition());
+                telemetry.addData("LBM Current Pos", LB.getCurrentPosition());
+                telemetry.addData("RBM Current Pos", RB.getCurrentPosition());
+                telemetry.addData("LFM Current Power", LF.getPower());
+                telemetry.addData("RFM Current Power", RF.getPower());
+                telemetry.addData("LBM Current Power", LB.getPower());
+                telemetry.addData("RBM Current Power", RB.getPower());
                 telemetry.update();
 
             }
@@ -182,32 +172,20 @@ public class RedFoundation extends LinearOpMode {
         }
     }
 
-    private void gyroDrive(double targetAngle) {
-        //+ is cc-clockwise
-        //- is clockwise
-        boolean finished = false;
-        while (!finished) {
+    private void turn(double speed, double difference) {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, ZYX, AngleUnit.DEGREES);
+        double startAngle = angles.firstAngle;
+        double targetAngle = angles.firstAngle + difference;
+        boolean turned = false;
+        while (!turned) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, ZYX, AngleUnit.DEGREES);
-            double currentAngle = angles.firstAngle;
-            double error = kP * (targetAngle - currentAngle);
-            LF.setPower(-error);
-            RF.setPower(error);
-            LB.setPower(-error);
-            RB.setPower(error);
-            telemetry.addData("targetAngle", targetAngle);
-            telemetry.addData("currentAngle", currentAngle);
-            telemetry.addData("error", error);
-            telemetry.addData("targetAngle - currentAngle", targetAngle - currentAngle);
-            telemetry.addData("finished", finished);
-
-            telemetry.addData("LFM Current Power", LF.getPower());
-            telemetry.addData("RFM Current Power", RF.getPower());
-            telemetry.addData("LBM Current Power", LB.getPower());
-            telemetry.addData("RBM Current Power", RB.getPower());
-
-            telemetry.update();
-            if (Math.abs(targetAngle - currentAngle) < 7) {
-                finished = true;
+            double error = (angles.firstAngle - startAngle);
+            LF.setPower(speed - error);
+            LB.setPower(speed - error);
+            RF.setPower(speed + error);
+            RB.setPower(speed + error);
+            if((Math.abs(angles.firstAngle - targetAngle)) < 5) {
+                turned = true;
             }
         }
     }
