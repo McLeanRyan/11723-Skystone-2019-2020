@@ -24,8 +24,10 @@ public class BlueFoundation extends LinearOpMode {
     BNO055IMU imu;
     private Orientation angles;
 
+    double kP = 0.005;
+
     double ticksPerMotorRev = 383.6;
-    double driveGearReduction = 2;
+    double driveGearReduction = 0.5;
     double wheelDiameterInches = 4;
     double ticksPerInch = (ticksPerMotorRev * driveGearReduction) / (wheelDiameterInches * 3.14159265359);
 
@@ -81,7 +83,8 @@ public class BlueFoundation extends LinearOpMode {
             encoderDrive(.15,-21,false);
 
             ARM2.setPower(1);
-            //sleep();
+            sleep(2000);
+            ARM2.setPower(0);
 
             encoderDrive(.15,20, false);
 
@@ -89,7 +92,7 @@ public class BlueFoundation extends LinearOpMode {
             sleep(800);
             ARM2.setPower(0);
 
-            turn(-0.1, 90);
+            gyroDrive(90);
 
             encoderDrive(.15,30,false);
         }
@@ -172,20 +175,32 @@ public class BlueFoundation extends LinearOpMode {
         }
     }
 
-    private void turn(double speed, double difference) {
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, ZYX, AngleUnit.DEGREES);
-        double startAngle = angles.firstAngle;
-        double targetAngle = angles.firstAngle + difference;
-        boolean turned = false;
-        while (!turned) {
+    private void gyroDrive(double targetAngle) {
+        //+ is counter-clockwise
+        //- is clockwise
+        boolean finished = false;
+        while (!finished) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, ZYX, AngleUnit.DEGREES);
-            double error = (angles.firstAngle - startAngle);
-            LF.setPower(speed - error);
-            LB.setPower(speed - error);
-            RF.setPower(speed + error);
-            RB.setPower(speed + error);
-            if((Math.abs(angles.firstAngle - targetAngle)) < 5) {
-                turned = true;
+            double currentAngle = angles.firstAngle;
+            double error = kP * (targetAngle - currentAngle);
+            LF.setPower(-error);
+            RF.setPower(error);
+            LB.setPower(-error);
+            RB.setPower(error);
+            telemetry.addData("targetAngle", targetAngle);
+            telemetry.addData("currentAngle", currentAngle);
+            telemetry.addData("error", error);
+            telemetry.addData("targetAngle - currentAngle", targetAngle - currentAngle);
+            telemetry.addData("finished", finished);
+
+            telemetry.addData("LFM Current Power", LF.getPower());
+            telemetry.addData("RFM Current Power", RF.getPower());
+            telemetry.addData("LBM Current Power", LB.getPower());
+            telemetry.addData("RBM Current Power", RB.getPower());
+
+            telemetry.update();
+            if (Math.abs(targetAngle - currentAngle) < 4) {
+                finished = true;
             }
         }
     }

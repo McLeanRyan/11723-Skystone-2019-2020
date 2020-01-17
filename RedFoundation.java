@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.BNO055IMU;       //imports things that we need
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -20,7 +21,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 @Autonomous
 public class RedFoundation extends LinearOpMode {
 
-    DcMotor LF, RF, LB, RB, FI, LIFT;
+    DcMotor LF, RF, LB, RB, FI, LIFT; // Defines names of hardware
     CRServo ARM2, BOOM;
 
     BNO055IMU imu;
@@ -30,7 +31,7 @@ public class RedFoundation extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    double ticksPerMotorRev = 383.6;
+    double ticksPerMotorRev = 383.6;        //sets values we will need later
     double driveGearReduction = 0.5;
     double wheelDiameterInches = 3.93701;
     double ticksPerInch = (ticksPerMotorRev * driveGearReduction) / (wheelDiameterInches * 3.14159265359);
@@ -43,7 +44,7 @@ public class RedFoundation extends LinearOpMode {
         telemetry.addData("Mode", "Initialized");
         telemetry.update();
 
-        RF = hardwareMap.dcMotor.get("RF");
+        RF = hardwareMap.dcMotor.get("RF");     //gets each motor and servo from hardware map
         RB = hardwareMap.dcMotor.get("RB");
         LF = hardwareMap.dcMotor.get("LF");
         LB = hardwareMap.dcMotor.get("LB");
@@ -66,10 +67,9 @@ public class RedFoundation extends LinearOpMode {
         double drivePower = .4;
         double turnPower = .2;
 
-        ARM2.setPower(0);
         BOOM.setPower(0);
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();       //sets up IMU
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "REVHub1IMUCalibration.json";
@@ -84,20 +84,21 @@ public class RedFoundation extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-           // encoderDrive(.15,-21,60, false);
+           encoderDrive(.15,-21,60, false);
 
-            //ARM2.setPower(1);
-            //sleep();
+            ARM2.setPower(1);
+            sleep(0);
+            ARM2.setPower(0);
 
-            //encoderDrive(.15,20, 60, false);
+            encoderDrive(.15,20, 60, false);
 
-            /*ARM2.setPower(-1);
+            ARM2.setPower(-1);
             sleep(800);
-            ARM2.setPower(0);*/
+            ARM2.setPower(0);
 
             gyroDrive(90);
 
-            //encoderDrive(.15,30,60, false);
+            encoderDrive(.15,30,60, false);
             stop();
         }
     }
@@ -183,7 +184,7 @@ public class RedFoundation extends LinearOpMode {
     }
 
     private void gyroDrive(double targetAngle) {
-        //+ is cc-clockwise
+        //+ is counter-clockwise
         //- is clockwise
         boolean finished = false;
         while (!finished) {
@@ -206,7 +207,7 @@ public class RedFoundation extends LinearOpMode {
             telemetry.addData("RBM Current Power", RB.getPower());
 
             telemetry.update();
-            if (Math.abs(targetAngle - currentAngle) < 7) {
+            if (Math.abs(targetAngle - currentAngle) < 4) {
                 finished = true;
             }
         }
