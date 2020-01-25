@@ -6,16 +6,18 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous
 public class EncodersTest extends LinearOpMode {
 
     DcMotor RF, RB, LF, LB = null;
     DcMotor FI, LIFT;
-    CRServo ARM2, BOOM;
+    CRServo BOOM;
+    Servo ARM2;
 
     double ticksPerMotorRev = 383.6;
-    double driveGearReduction = 2;
+    double driveGearReduction = 0.5;
     double wheelDiameterInches = 4;
     double ticksPerInch = (ticksPerMotorRev * driveGearReduction) / (wheelDiameterInches * 3.14159265359);
 
@@ -33,7 +35,7 @@ public class EncodersTest extends LinearOpMode {
         FI = hardwareMap.dcMotor.get("FI");
         LIFT = hardwareMap.dcMotor.get("LIFT");
 
-        ARM2 = hardwareMap.crservo.get("ARM2");
+        ARM2 = hardwareMap.servo.get("ARM2");
         BOOM = hardwareMap.crservo.get("BOOM");
 
         RF.setDirection(DcMotor.Direction.REVERSE);
@@ -51,8 +53,18 @@ public class EncodersTest extends LinearOpMode {
         FI.setPower(0);
         LIFT.setPower(0);
 
-        ARM2.setPower(0);
         BOOM.setPower(0);
+
+        telemetry.addData("LF Starting Pos", LF.getCurrentPosition());
+        telemetry.addData("LB Starting Pos", LB.getCurrentPosition());
+        telemetry.addData("RF Starting Pos", RF.getCurrentPosition());
+        telemetry.addData("RB Starting Pos", RB.getCurrentPosition());
+        telemetry.update();
+
+        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
 
@@ -62,51 +74,86 @@ public class EncodersTest extends LinearOpMode {
             RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            encoderDrive(0.2, 24, false);
+            stop();
+        }
 
-            telemetry.addLine("RUN USING ENCODERS");
+    }
 
-            int LFStartingPosition = LF.getCurrentPosition();
-            int LBStartingPosition = LB.getCurrentPosition();
-            int RFStartingPosition = RF.getCurrentPosition();
-            int RBStartingPosition = RB.getCurrentPosition();
+    private void encoderDrive(double speed, double inches, boolean strafe) {
 
-            telemetry.addLine("Found current position");
+        telemetry.addLine("Encoder Drive");
 
-            LF.setTargetPosition((int)(12 * ticksPerInch) + LFStartingPosition);
-            LB.setTargetPosition((int)(12 * ticksPerInch) + LBStartingPosition);
-            RF.setTargetPosition((int)(12 * ticksPerInch) + RFStartingPosition);
-            RB.setTargetPosition((int)(12 * ticksPerInch) + RBStartingPosition);
+        int newLFTarget;
+        int newRFTarget;
+        int newLBTarget;
+        int newRBTarget;
+        int lFPos = LF.getCurrentPosition();
+        int rFPos = RF.getCurrentPosition();
+        int lBPos = LB.getCurrentPosition();
+        int rBPos = RB.getCurrentPosition();
 
-            telemetry.addLine("Set Target Position");
-
-            LF.setPower(Math.abs(driveSpeed));
-            LB.setPower(Math.abs(driveSpeed));
-            RF.setPower(Math.abs(driveSpeed));
-            RB.setPower(Math.abs(driveSpeed));
-
-            while (LF.isBusy() || LB.isBusy() || RF.isBusy() || RB.isBusy()) {
-                telemetry.addData("LF Encoder Pos: ", LF.getCurrentPosition());
-                telemetry.addData("LB Encoder Pos: ", LB.getCurrentPosition());
-                telemetry.addData("RF Encoder Pos: ", RF.getCurrentPosition());
-                telemetry.addData("RB Encoder Pos: ", RB.getCurrentPosition());
-                telemetry.update();
+        if (opModeIsActive()) {
+            if (strafe) {
+                newLFTarget = lFPos + (int) (inches * ticksPerInch);
+                newRFTarget = rFPos - (int) (inches * ticksPerInch);
+                newLBTarget = lBPos - (int) (inches * ticksPerInch);
+                newRBTarget = rBPos + (int) (inches * ticksPerInch);
+            } else {
+                newLFTarget = lFPos + (int) (inches * ticksPerInch);
+                newRFTarget = rFPos + (int) (inches * ticksPerInch);
+                newLBTarget = lBPos + (int) (inches * ticksPerInch);
+                newRBTarget = rBPos + (int) (inches * ticksPerInch);
             }
 
-            telemetry.addLine("Finished Driving");
+            telemetry.addData("speed", speed);
+            telemetry.addData("inches", inches);
+            telemetry.addData("newLFTarget", newLFTarget);
+            telemetry.addData("newRFTarget", newRFTarget);
+            telemetry.addData("newLBTarget", newLBTarget);
+            telemetry.addData("newRBTarget", newRBTarget);
+
+
+            LF.setTargetPosition(newLFTarget);
+            RF.setTargetPosition(newRFTarget);
+            LB.setTargetPosition(newLBTarget);
+            RB.setTargetPosition(newRBTarget);
+
+            LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            LF.setPower(Math.abs(speed));
+            RF.setPower(Math.abs(speed));
+            LB.setPower(Math.abs(speed));
+            RB.setPower(Math.abs(speed));
+
+            while (opModeIsActive() && (LF.isBusy() && RF.isBusy() && LB.isBusy() && RB.isBusy())) {
+
+                telemetry.addData("LF Current Pos", LF.getCurrentPosition());
+                telemetry.addData("RF Current Pos", RF.getCurrentPosition());
+                telemetry.addData("LB Current Pos", LB.getCurrentPosition());
+                telemetry.addData("RB Current Pos", RB.getCurrentPosition());
+                telemetry.addData("LF Current Power", LF.getPower());
+                telemetry.addData("RF Current Power", RF.getPower());
+                telemetry.addData("LB Current Power", LB.getPower());
+                telemetry.addData("RB Current Power", RB.getPower());
+                telemetry.update();
+
+            }
 
             LF.setPower(0);
-            LB.setPower(0);
             RF.setPower(0);
+            LB.setPower(0);
             RB.setPower(0);
 
-            LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            sleep(10000);
         }
     }
 }
