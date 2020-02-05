@@ -21,8 +21,6 @@ public class EncodersTest extends LinearOpMode {
     double wheelDiameterInches = 4;
     double ticksPerInch = (ticksPerMotorRev * driveGearReduction) / (wheelDiameterInches * 3.14159265359);
 
-    double driveSpeed = .2;
-
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Mode", "Initialized");
@@ -41,10 +39,10 @@ public class EncodersTest extends LinearOpMode {
         RF.setDirection(DcMotor.Direction.REVERSE);
         RB.setDirection(DcMotor.Direction.REVERSE);
 
-        LF.getCurrentPosition();
-        LB.getCurrentPosition();
-        RF.getCurrentPosition();
-        RB.getCurrentPosition();
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         LF.setPower(0);
         LB.setPower(0);
@@ -68,13 +66,9 @@ public class EncodersTest extends LinearOpMode {
 
         waitForStart();
 
-        while (opModeIsActive()) {
-            LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (opModeIsActive()) {
 
-            encoderDrive(0.2, 24, false);
+            encoderDrive(0.2, 48, false);
             stop();
         }
 
@@ -130,7 +124,10 @@ public class EncodersTest extends LinearOpMode {
             RB.setPower(Math.abs(speed));
 
             while (opModeIsActive() && (LF.isBusy() && RF.isBusy() && LB.isBusy() && RB.isBusy())) {
-
+                telemetry.addData("newLFTarget", newLFTarget);
+                telemetry.addData("newRFTarget", newRFTarget);
+                telemetry.addData("newLBTarget", newLBTarget);
+                telemetry.addData("newRBTarget", newRBTarget);
                 telemetry.addData("LF Current Pos", LF.getCurrentPosition());
                 telemetry.addData("RF Current Pos", RF.getCurrentPosition());
                 telemetry.addData("LB Current Pos", LB.getCurrentPosition());
@@ -140,7 +137,6 @@ public class EncodersTest extends LinearOpMode {
                 telemetry.addData("LB Current Power", LB.getPower());
                 telemetry.addData("RB Current Power", RB.getPower());
                 telemetry.update();
-
             }
 
             LF.setPower(0);

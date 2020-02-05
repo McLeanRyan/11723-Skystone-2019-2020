@@ -84,7 +84,7 @@ public class RedFoundation extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-           encoderDrive(.15,-21,60, false);
+           /*encoderDrive(.15,-21,60, false);
 
             ARM2.setPower(1);
             sleep(0);
@@ -94,12 +94,16 @@ public class RedFoundation extends LinearOpMode {
 
             ARM2.setPower(-1);
             sleep(800);
-            ARM2.setPower(0);
+            ARM2.setPower(0);*/
 
-            gyroDrive(90);
+            gyroTurn(90);
 
-            encoderDrive(.15,30,60, false);
-            stop();
+            sleep(1000);
+
+            gyroTurn(-90);
+
+            //encoderDrive(.15,30,60, false);
+            //stop();
         }
     }
 
@@ -183,7 +187,7 @@ public class RedFoundation extends LinearOpMode {
         }
     }
 
-    private void gyroDrive(double targetAngle) {
+    private void gyroTurn(double targetAngle) {
         //+ is counter-clockwise
         //- is clockwise
         boolean finished = false;
@@ -209,6 +213,8 @@ public class RedFoundation extends LinearOpMode {
             telemetry.update();
             if (Math.abs(targetAngle - currentAngle) < 4) {
                 finished = true;
+
+            sleep(1000);
             }
         }
     }

@@ -201,6 +201,8 @@ public class BlueFoundation extends LinearOpMode {
             telemetry.update();
             if (Math.abs(targetAngle - currentAngle) < 4) {
                 finished = true;
+
+            sleep(1000);
             }
         }
     }
