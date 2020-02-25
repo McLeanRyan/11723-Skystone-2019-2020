@@ -22,12 +22,13 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 public class RedFoundation extends LinearOpMode {
 
     DcMotor LF, RF, LB, RB, FI, LIFT; // Defines names of hardware
-    CRServo ARM2, BOOM;
+    CRServo BOOM;
+    Servo ARM2;
 
     BNO055IMU imu;
     private Orientation angles;
 
-    double kP = 0.005;
+    double kP = 0.006;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -51,7 +52,7 @@ public class RedFoundation extends LinearOpMode {
         FI = hardwareMap.dcMotor.get("FI");
         LIFT = hardwareMap.dcMotor.get("LIFT");
 
-        ARM2 = hardwareMap.crservo.get("ARM2");
+        ARM2 = hardwareMap.servo.get("ARM2");
         BOOM = hardwareMap.crservo.get("BOOM");
 
         RF.setDirection(DcMotor.Direction.REVERSE);
@@ -100,7 +101,7 @@ public class RedFoundation extends LinearOpMode {
 
             sleep(1000);
 
-            gyroTurn(-90);
+            //gyroTurn(-90);
 
             //encoderDrive(.15,30,60, false);
             //stop();
@@ -139,6 +140,7 @@ public class RedFoundation extends LinearOpMode {
             telemetry.addData("newRFTarget", newRFTarget);
             telemetry.addData("newLBTarget", newLBTarget);
             telemetry.addData("newRBTarget", newRBTarget);
+            telemetry.update();
 
 
             LF.setTargetPosition(newLFTarget);
@@ -209,6 +211,7 @@ public class RedFoundation extends LinearOpMode {
             telemetry.addData("RFM Current Power", RF.getPower());
             telemetry.addData("LBM Current Power", LB.getPower());
             telemetry.addData("RBM Current Power", RB.getPower());
+            telemetry.update();
 
             telemetry.update();
             if (Math.abs(targetAngle - currentAngle) < 4) {

@@ -16,7 +16,7 @@ public class EncodersTest extends LinearOpMode {
     CRServo BOOM;
     Servo ARM2;
 
-    double ticksPerMotorRev = 383.6;
+    double ticksPerMotorRev = 383;
     double driveGearReduction = 0.5;
     double wheelDiameterInches = 4;
     double ticksPerInch = (ticksPerMotorRev * driveGearReduction) / (wheelDiameterInches * 3.14159265359);
@@ -68,7 +68,7 @@ public class EncodersTest extends LinearOpMode {
 
         if (opModeIsActive()) {
 
-            encoderDrive(0.2, 48, false);
+            encoderDrive(0.15, 24, false);
             stop();
         }
 
@@ -106,6 +106,7 @@ public class EncodersTest extends LinearOpMode {
             telemetry.addData("newRFTarget", newRFTarget);
             telemetry.addData("newLBTarget", newLBTarget);
             telemetry.addData("newRBTarget", newRBTarget);
+            telemetry.update();
 
 
             LF.setTargetPosition(newLFTarget);
