@@ -24,7 +24,7 @@ public class PD extends LinearOpMode {
     Servo ARM2;
 
     BNO055IMU imu;
-    private Orientation angles;
+    Orientation angles;
 
     double kP = 0.005;
     double kD = 0.01;
@@ -36,7 +36,7 @@ public class PD extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     double ticksPerMotorRev = 383.6;        //sets values we will need later
-    double driveGearReduction = 0.5;
+    double driveGearReduction = 1;
     double wheelDiameterInches = 3.93701;
     double ticksPerInch = (ticksPerMotorRev * driveGearReduction) / (wheelDiameterInches * 3.14159265359);
 
@@ -47,7 +47,6 @@ public class PD extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Mode", "Initialized");
         telemetry.update();
-
         RF = hardwareMap.dcMotor.get("RF");     //gets each motor and servo from hardware map
         RB = hardwareMap.dcMotor.get("RB");
         LF = hardwareMap.dcMotor.get("LF");
@@ -85,93 +84,19 @@ public class PD extends LinearOpMode {
 
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
+        ARM2.setPosition(.4);
+
         waitForStart();
+
         while (opModeIsActive()) {
-           /*encoderDrive(.15,-21,60, false);
-            ARM2.setPower(1);
-            sleep(0);
-            ARM2.setPower(0);
-            encoderDrive(.15,20, 60, false);
-            ARM2.setPower(-1);
-            sleep(800);
-            ARM2.setPower(0);*/
-
-            //  encoderDrive(.25, 60, 60, false);
-            /*LF.setPower(.5);
-            LB.setPower(-.5);
-            RF.setPower(-.5);
-            RB.setPower(.5);
-            sleep(200);
-            RF.setPower(-.5);
-            RB.setPower(-.5);
-            LF.setPower(-.5);
-            LB.setPower(-.5);
-            sleep(1000);
-
-            RF.setPower(0);
-            RB.setPower(0);
-            LF.setPower(0);
-            LB.setPower(0);
-            sleep(500);
-            ARM2.setPosition(0);
-            sleep(500);
-
-            RF.setPower(.5);
-            RB.setPower(.5);
-            LF.setPower(.5);
-            LB.setPower(.5);
-            sleep(300);
-            //    gyroTurn(90);
-            sleep(1000);
-//            RF.setPower(.25);
-//            RB.setPower(.25);
-//            LF.setPower(.25);
-//            LB.setPower(.25);
-//            sleep(1000);
-            gyroTurn(90);
-            //  gyroTurn(180);
-            RF.setPower(-.5);
-            RB.setPower(-.5);
-            LF.setPower(-.5);
-            LB.setPower(-.5);
-            sleep(250);
-
+           encoderDrive(.1, -10, 31, false);
+           /*encoderDrive(.5, 6, 31, true);
+           encoderDrive(.1, -20, 31, false);
+           ARM2.setPosition(0);
+            encoderDrive(.1,24,31, false);
             ARM2.setPosition(.4);
-
-            LF.setPower(.5);
-            LB.setPower(-.5);
-            RF.setPower(-.5);
-            RB.setPower(.5);
-            sleep(300);
-
-            LF.setPower(-.5);
-            LB.setPower(-.5);
-            RF.setPower(.5);
-            RB.setPower(.5);
-            sleep(100);
-
-            telemetry.addLine("done with foundation");
-            RF.setPower(.5);
-            RB.setPower(.5);
-            LF.setPower(.5);
-            LB.setPower(.5);
-            sleep(750);
-
-            telemetry.addLine("done with park");
-            LF.setPower(.8);
-            LB.setPower(.8);
-            RF.setPower(.8);
-            RB.setPower(.8);
-            sleep(300);
-
-
-
-            stop();*/
-
-
-            encoderDrive(.15,48,60, false);
+            encoderDrive(.5, -21, 31, true);*/
             stop();
-
 
         }
     }
@@ -188,7 +113,8 @@ public class PD extends LinearOpMode {
         int rFPos = RF.getCurrentPosition();
         int lBPos = LB.getCurrentPosition();
         int rBPos = RB.getCurrentPosition();
-        Orientation angles;
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, ZYX, AngleUnit.DEGREES);
+        double startAngle = angles.firstAngle;
 
         if (opModeIsActive()) {
             if (strafe) {
@@ -226,11 +152,12 @@ public class PD extends LinearOpMode {
             RB.setPower(Math.abs(speed));
 
             runtime.reset();
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, ZYX, AngleUnit.DEGREES);
-            double startAngle = angles.firstAngle;
             while (opModeIsActive() && runtime.seconds() < timeoutS && (LF.isBusy() && RF.isBusy() && LB.isBusy() && RB.isBusy())) {
                 if (!strafe) {
-                    double error = 100 * (startAngle - angles.firstAngle);
+                    double error = kP * (startAngle - angles.firstAngle);
+                    angles = imu.getAngularOrientation(AxesReference.INTRINSIC, ZYX, AngleUnit.DEGREES);
+                    telemetry.addData("Start Angle", startAngle);
+                    telemetry.addData("Current Angle", angles.firstAngle);
                     telemetry.addData("error", error);
                     telemetry.update();
                     if (error > 0) {
