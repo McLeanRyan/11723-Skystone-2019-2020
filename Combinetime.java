@@ -131,6 +131,8 @@ public class Combinetime extends LinearOpMode {
 
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
+        Arm2.setPosition(.6);
+
         telemetry.addLine("ready to go!");
         telemetry.update();
 
@@ -138,24 +140,25 @@ public class Combinetime extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            encoderDrive(.5, -10, 31, false);
-           encoderDrive(.5, 9, 31, true);
-           encoderDrive(.5, -16, 31, false);
+            encoderDrive(.4, -10, 31, false);
+           encoderDrive(.5, 10, 31, true);
+           encoderDrive(.4, -18, 31, false);
            Arm2.setPosition(0);
            sleep(250);
-            encoderDrive(.2,31,31, false);
-            gyroTurn(20);
-            encoderDrive(.2,-3,31, false);
-            Arm2.setPosition(.4);
-            encoderDrive(.5, -60, 31, true);
-            gyroTurn(175);
-            RF.setPower(-.3);
+            encoderDrive(.2,32,31, false);
+            //encoderDrive(.2,-3,31, false);
+            Arm2.setPosition(.6);
+            gyroTurn(-85);
+            encoderDrive(.5, -70, 31, false);
+            gyroTurn(-168);
+            /*RF.setPower(-.3);
             RB.setPower(-.3);
             LF.setPower(.3);
             LB.setPower(.3);
-            sleep(100);
-            encoderDrive(.5, 4, 31, false);
-            encoderDrive(.5, 8, 31, true);
+            sleep(100);*/
+            //encoderDrive(.5, 4, 31, false);
+            encoderDrive(.2, 13, 31, false);
+           // encoderDrive(.5, 3, 31, true);
 
 
 
@@ -202,13 +205,13 @@ public class Combinetime extends LinearOpMode {
                     telemetry.addData("Visible Target", "none");
                     Where = 3; //if stone isn't found
 
-                    encoderDrive(.6, 8, 60, true);
+                    encoderDrive(.6, 8.05, 60, true);
 
                     RF.setPower(stop);
                     RB.setPower(stop);
                     LF.setPower(stop);
                     LB.setPower(stop);
-                    sleep(400);
+                    sleep(700);
 
                     telemetry.update();
                     timer.reset();
@@ -220,10 +223,24 @@ public class Combinetime extends LinearOpMode {
                 if (Where == 1) {
                     telemetry.addLine("Position 1");
                     telemetry.update();
-                    encoderDrive(.8, 16, 60, false);
+                    encoderDrive(.5, -8, 31, true);
+                    encoderDrive(.4, 16, 60, false);
+
+                    BNO055IMU.Parameters parameters2 = new BNO055IMU.Parameters();       //sets up IMU
+                    parameters2.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+                    parameters2.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+                    parameters2.calibrationDataFile = "REVHub1IMUCalibration.json";
+                    parameters2.loggingEnabled      = true;
+                    parameters2.loggingTag          = "IMU";
+
+                    imu = hardwareMap.get(BNO055IMU.class, "imu");
+                    imu.initialize(parameters2);
+
+                    imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+                    sleep(500);
                     gyroTurn(90);
-                    encoderDrive(.5, -18, 60, true);
-                    encoderDrive(.3, 60, 60, false );
+                    encoderDrive(.5, -16, 60, true);
+                    encoderDrive(.3, 36, 60, false );
                     /*encoderDrive(.3, -48, 60, false);
                     gyroTurn(-90);
                     encoderDrive(.8, 16, 60, false);
@@ -238,10 +255,23 @@ public class Combinetime extends LinearOpMode {
                 if (Where == 2) {
                     telemetry.addLine("Position 2");
                     telemetry.update();
-                    encoderDrive(.8, 16, 60, false);
+                    encoderDrive(.5, -8, 31, true);
+                    encoderDrive(.4, 16, 60, false);
+                    BNO055IMU.Parameters parameters2 = new BNO055IMU.Parameters();       //sets up IMU
+                    parameters2.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+                    parameters2.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+                    parameters2.calibrationDataFile = "REVHub1IMUCalibration.json";
+                    parameters2.loggingEnabled      = true;
+                    parameters2.loggingTag          = "IMU";
+
+                    imu = hardwareMap.get(BNO055IMU.class, "imu");
+                    imu.initialize(parameters2);
+
+                    imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+                    sleep(500);
                     gyroTurn(90);
-                    encoderDrive(.5, -18, 60, true);
-                    encoderDrive(.3, 60, 60, false );
+                    encoderDrive(.5, -16, 60, true);
+                    encoderDrive(.3, 36, 60, false );
                     /*encoderDrive(.3, -48, 60, false);
                     gyroTurn(-90);
                     encoderDrive(.8, 16, 60, false);
@@ -249,16 +279,30 @@ public class Combinetime extends LinearOpMode {
                     encoderDrive(.5, -18, 60, true);
                     encoderDrive(.2, 16, 60, false);
                     gyroTurn(90);
-                    /*encoderDrive(.2, 32, 60, false );
+                    encoderDrive(.2, 32, 60, false );
                     encoderDrive(.2, -24, 60, false);*/
                 }
                 if (Where == 4) {
                     telemetry.addLine("Position 3");
                     telemetry.update();
-                    encoderDrive(.8, 16, 60, false);
+                    encoderDrive(.5, -8, 31, true);
+                    encoderDrive(.4, 16, 60, false);
+                    BNO055IMU.Parameters parameters2 = new BNO055IMU.Parameters();       //sets up IMU
+                    parameters2.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+                    parameters2.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+                    parameters2.calibrationDataFile = "REVHub1IMUCalibration.json";
+                    parameters2.loggingEnabled      = true;
+                    parameters2.loggingTag          = "IMU";
+
+                    imu = hardwareMap.get(BNO055IMU.class, "imu");
+                    imu.initialize(parameters2);
+
+                    imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+                    sleep(500);
                     gyroTurn(90);
-                    encoderDrive(.5, -18, 60, true);
-                    encoderDrive(.3, 60, 60, false );
+                    encoderDrive(.5, -16, 60, true);
+                    encoderDrive(.3, 36, 60, false );
+
                     /*encoderDrive(.3, -48, 60, false);
                     gyroTurn(-90);
                     encoderDrive(.8, 16, 60, false);
@@ -266,7 +310,7 @@ public class Combinetime extends LinearOpMode {
                     encoderDrive(.5, -18, 60, true);
                     encoderDrive(.2, 16, 60, false);
                     gyroTurn(90);
-                    /*encoderDrive(.2, 32, 60, false );
+                    encoderDrive(.2, 32, 60, false );
                     encoderDrive(.2, -24, 60, false);*/
                 }
             }
@@ -389,6 +433,8 @@ public class Combinetime extends LinearOpMode {
             telemetry.addData("error", error);
             telemetry.addData("targetAngle - currentAngle", targetAngle - currentAngle);
             telemetry.addData("finished", finished);
+
+
 
             telemetry.addData("LFM Current Power", LF.getPower());
             telemetry.addData("RFM Current Power", RF.getPower());
