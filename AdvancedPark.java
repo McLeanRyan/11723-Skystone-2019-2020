@@ -94,11 +94,16 @@ public class AdvancedPark extends LinearOpMode {
             telemetry.addData("Going to far side?", far);
             telemetry.addData("Distance", distance);
             telemetry.addData("Delay", delay);
-            telemetry.addData( "Starting on left side?", left);
+            telemetry.addData("Starting on left side?", left);
             telemetry.addData("LF Starting Pos", LF.getCurrentPosition());
             telemetry.addData("LB Starting Pos", LB.getCurrentPosition());
             telemetry.addData("RF Starting Pos", RF.getCurrentPosition());
             telemetry.addData("RB Starting Pos", RB.getCurrentPosition());
+            telemetry.addLine("D Pad Left/Right for Distance");
+            telemetry.addLine("D Pad Up/Down for Far");
+            telemetry.addLine("Bumpers for delay");
+            telemetry.addLine("B for left");
+            telemetry.addLine("A to finish and move on");
             telemetry.update();
         }
 
@@ -107,7 +112,7 @@ public class AdvancedPark extends LinearOpMode {
             distance = 0;
         }
         if (!left) {
-            distance = (-distance);
+            distance = -distance;
         }
         sleep(delay);
         if (far) {

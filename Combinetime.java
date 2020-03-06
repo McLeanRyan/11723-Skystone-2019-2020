@@ -32,7 +32,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 public class Combinetime extends LinearOpMode {
 
     DcMotor LF, RF, LB, RB, FI, CraneMotor; // Defines names of hardware
-    CRServo Crane1;
+    CRServo BOOM;
     Servo Arm2;
 
     int Where =0;
@@ -77,7 +77,7 @@ public class Combinetime extends LinearOpMode {
         CraneMotor = hardwareMap.dcMotor.get("LIFT");
 
         Arm2 = hardwareMap.servo.get("ARM2");
-        Crane1 = hardwareMap.crservo.get("BOOM");
+        BOOM = hardwareMap.crservo.get("BOOM");
 
         Camera cam = Camera.open();
         Camera.Parameters p = cam.getParameters();
@@ -117,7 +117,7 @@ public class Combinetime extends LinearOpMode {
         // double drivePower = .4;
         // double turnPower = .2;
 
-        Crane1.setPower(0);
+        BOOM.setPower(0);
 
         BNO055IMU.Parameters parameters1 = new BNO055IMU.Parameters();       //sets up IMU
         parameters1.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -145,11 +145,11 @@ public class Combinetime extends LinearOpMode {
            encoderDrive(.4, -18, 31, false);
            Arm2.setPosition(0);
            sleep(250);
-            encoderDrive(.2,32,31, false);
+            encoderDrive(.4,32,31, false);
             //encoderDrive(.2,-3,31, false);
             Arm2.setPosition(.6);
             gyroTurn(-85);
-            encoderDrive(.5, -70, 31, false);
+            encoderDrive(.5, -69, 31, false);
             gyroTurn(-168);
             /*RF.setPower(-.3);
             RB.setPower(-.3);
@@ -157,7 +157,7 @@ public class Combinetime extends LinearOpMode {
             LB.setPower(.3);
             sleep(100);*/
             //encoderDrive(.5, 4, 31, false);
-            encoderDrive(.2, 13, 31, false);
+            encoderDrive(.3, 13, 31, false);
            // encoderDrive(.5, 3, 31, true);
 
 
@@ -223,6 +223,9 @@ public class Combinetime extends LinearOpMode {
                 if (Where == 1) {
                     telemetry.addLine("Position 1");
                     telemetry.update();
+                    BOOM.setPower(1);
+                    sleep(500);
+                    BOOM.setPower(0);
                     encoderDrive(.5, -8, 31, true);
                     encoderDrive(.4, 16, 60, false);
 
@@ -237,7 +240,10 @@ public class Combinetime extends LinearOpMode {
                     imu.initialize(parameters2);
 
                     imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+                    sleep(700);
+                    BOOM.setPower(-1);
                     sleep(500);
+                    BOOM.setPower(0);
                     gyroTurn(90);
                     encoderDrive(.5, -16, 60, true);
                     encoderDrive(.3, 36, 60, false );
@@ -255,8 +261,12 @@ public class Combinetime extends LinearOpMode {
                 if (Where == 2) {
                     telemetry.addLine("Position 2");
                     telemetry.update();
+                    BOOM.setPower(1);
+                    sleep(500);
+                    BOOM.setPower(0);
                     encoderDrive(.5, -8, 31, true);
                     encoderDrive(.4, 16, 60, false);
+
                     BNO055IMU.Parameters parameters2 = new BNO055IMU.Parameters();       //sets up IMU
                     parameters2.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
                     parameters2.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -268,7 +278,11 @@ public class Combinetime extends LinearOpMode {
                     imu.initialize(parameters2);
 
                     imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+                    sleep(700);
+                    BOOM.setPower(-1);
                     sleep(500);
+                    BOOM.setPower(0);
+
                     gyroTurn(90);
                     encoderDrive(.5, -16, 60, true);
                     encoderDrive(.3, 36, 60, false );
@@ -285,6 +299,9 @@ public class Combinetime extends LinearOpMode {
                 if (Where == 4) {
                     telemetry.addLine("Position 3");
                     telemetry.update();
+                    BOOM.setPower(1);
+                    sleep(500);
+                    BOOM.setPower(0);
                     encoderDrive(.5, -8, 31, true);
                     encoderDrive(.4, 16, 60, false);
                     BNO055IMU.Parameters parameters2 = new BNO055IMU.Parameters();       //sets up IMU
@@ -298,7 +315,11 @@ public class Combinetime extends LinearOpMode {
                     imu.initialize(parameters2);
 
                     imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+                    sleep(700);
+                    BOOM.setPower(-1);
                     sleep(500);
+                    BOOM.setPower(0);
+
                     gyroTurn(90);
                     encoderDrive(.5, -16, 60, true);
                     encoderDrive(.3, 36, 60, false );
