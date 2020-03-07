@@ -1,3 +1,5 @@
+package org.firstinspires.ftc.teamcode;
+
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 
@@ -15,7 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class testst extends OpMode {
     private DcMotor RF,RB,LF,LB,FI,Cranemotor;
     private CRServo Crane1 = null;
-    private Servo Arm2;
+    private Servo Arm2, Stone;
     // private Servo CapServo;
     int pulse = 1680;
 
@@ -32,6 +34,7 @@ public class testst extends OpMode {
         Cranemotor = hardwareMap.dcMotor.get("LIFT");
         Arm2 = hardwareMap.servo.get("ARM2");
         Crane1  = hardwareMap.crservo.get("BOOM");
+        Stone = hardwareMap.servo.get("Stone");
         //   CapServo = hardwareMap.servo.get("Cap");
         FI.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Cranemotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -121,6 +124,12 @@ public class testst extends OpMode {
         if (gamepad2.dpad_left){
             Arm2.setPosition(.4);
         }
+        if (gamepad2.dpad_up) {
+            Stone.setPosition(1);
+        }
+        if (gamepad2.dpad_down){
+            Stone.setPosition(.2);
+        }
         Crane1.setPower(gamepad2.left_stick_y);
 //            Cranemotor.setPower(0);
 //        }
@@ -194,7 +203,6 @@ public class testst extends OpMode {
             }
             FI.setPower(0);
         }
-
         if (gamepad2.right_trigger > .3) {
             Cranemotor.setPower(1);
         } else {
